@@ -1,0 +1,603 @@
+/*
+ * The services page (ServicesPage.tsx) in the Viral look: black hero with
+ * the full index; the ten services on white beside a sticky rail; how the
+ * numbers are measured on black; then the shared FAQ and enquiry form.
+ * Prefixed `vs-` (the page) beside the shared `vd-` pieces, unlayered like
+ * the rest of the design. Breakpoints match Tailwind's.
+ */
+
+.vs-hero,
+.vs-body,
+.vs-numbers,
+.vs-direct {
+  --ink: #0c0807;
+  --blue: #2340ff;
+  --yellow: #f2c23f;
+  --rule: #e7e5e4;
+  --muted: #57534e;
+  --pad-x: max(1.25rem, calc((100vw - 80rem) / 2));
+}
+
+/* ---------------- Hero and index ---------------- */
+
+.vs-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 136px var(--pad-x) 88px;
+  background: #000;
+  color: #fff;
+}
+
+/* ---------------- Hero background ---------------- */
+
+/* The team photo at rest, in black and white */
+.vs-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.vs-hero__img {
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.05);
+}
+
+/* A service's photo, in colour, while its index entry is hovered or
+   focused. Each layer sits over the hero (its nearest positioned
+   ancestor); the image is only set — so only fetched — when wanted. */
+.vs-hero__swap {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-position: center;
+  background-size: cover;
+  opacity: 0;
+  transition: opacity 400ms ease;
+  pointer-events: none;
+}
+
+.vs-index__item:is(:hover, :focus-within) .vs-hero__swap {
+  background-image: var(--img);
+  opacity: 1;
+}
+
+/* The scrim: darkest behind the title on the left and the index on the
+   right, so both stay readable over any photo. Drawn after the photo
+   layers, at the same depth, so it covers them. */
+.vs-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(to right, rgb(0 0 0 / 0.88), rgb(0 0 0 / 0.55) 50%, rgb(0 0 0 / 0.82)),
+    linear-gradient(to bottom, rgb(0 0 0 / 0.6), transparent 30%, transparent 70%, rgb(0 0 0 / 0.7));
+  pointer-events: none;
+}
+
+@media (max-width: 767px), (prefers-reduced-motion: reduce) {
+  .vs-hero__swap {
+    transition: none;
+  }
+}
+
+.vs-hero__inner {
+  display: grid;
+  gap: 48px;
+}
+
+.vs-hero__title {
+  font-size: clamp(44px, 9vw, 112px);
+}
+
+.vs-hero .vd-tag__word {
+  color: #fff;
+}
+
+.vs-hero__subtitle {
+  max-width: 22ch;
+  margin-top: 28px;
+  font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.375rem);
+  font-weight: 800;
+  font-stretch: 112.5%;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.vs-hero__lead {
+  max-width: 34rem;
+  margin-top: 18px;
+  color: rgb(255 255 255 / 0.72);
+  font-size: clamp(1.0625rem, 0.98rem + 0.35vw, 1.25rem);
+  line-height: 1.45;
+}
+
+/* The index: every service, numbered as on the live site, each a jump */
+.vs-index__list {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgb(255 255 255 / 0.2);
+  list-style: none;
+}
+
+.vs-index__link {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding-block: 12px;
+  border-bottom: 1px solid rgb(255 255 255 / 0.2);
+  font-size: clamp(1rem, 0.94rem + 0.3vw, 1.1875rem);
+  font-weight: 700;
+  transition: color 150ms ease, padding-left 200ms ease;
+}
+
+.vs-index__num {
+  color: var(--yellow);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.vs-index__link:hover,
+.vs-index__link:focus-visible {
+  padding-left: 8px;
+  color: var(--yellow);
+}
+
+.vs-index__link:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 2px;
+}
+
+/* ---------------- Services ---------------- */
+
+.vs-body {
+  padding: 24px var(--pad-x) 40px;
+  background: #fff;
+  color: var(--ink);
+  color-scheme: light;
+}
+
+/* Phones: no rail — the hero's index does the jumping */
+.vs-rail {
+  display: none;
+}
+
+.vs-service {
+  padding-block: 64px;
+  border-bottom: 1px solid var(--rule);
+  scroll-margin-top: 80px;
+}
+
+.vs-service:last-child {
+  border-bottom: 0;
+}
+
+.vs-service__num {
+  color: var(--blue);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.vs-service__name {
+  margin-top: 8px;
+  font-size: clamp(2rem, 1.4rem + 2.4vw, 3.5rem);
+  font-weight: 900;
+  font-stretch: 125%;
+  line-height: 0.98;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* The tagline on the blue band, slanted like DIGI in the wordmark */
+.vs-service__tagline {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 0.3em 0.7em 0.36em;
+  background: var(--blue);
+  color: #fff;
+  font-size: clamp(1rem, 0.92rem + 0.4vw, 1.25rem);
+  font-weight: 800;
+  font-stretch: 112.5%;
+  line-height: 1.15;
+  transform: skewX(-12deg);
+  transform-origin: left center;
+}
+
+.vs-service__grid {
+  display: grid;
+  gap: 32px;
+  margin-top: 36px;
+}
+
+/* Phones: a landscape crop, so the words aren't a screen away */
+.vs-service__media {
+  position: relative;
+  margin: 0 0 12px;
+  aspect-ratio: 16 / 10;
+  background: #141416;
+}
+
+.vs-service__img {
+  object-fit: cover;
+}
+
+/* The key stat as a yellow type card off the photo's corner — the hero
+   wall's stat cards */
+.vs-stat {
+  position: absolute;
+  right: 0;
+  bottom: -12px;
+  display: grid;
+  gap: 4px;
+  min-width: 46%;
+  max-width: 70%;
+  padding: 14px 16px 16px;
+  background: var(--yellow);
+  color: #000;
+}
+
+.vs-stat__value {
+  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
+  font-weight: 900;
+  font-stretch: 112.5%;
+  line-height: 0.95;
+}
+
+.vs-stat__label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.vs-stat__note {
+  justify-self: start;
+  margin-top: 4px;
+  padding: 2px 6px;
+  box-shadow: inset 0 0 0 1px currentColor;
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.vs-service__pair {
+  display: grid;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.vs-service__label {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--blue);
+}
+
+.vs-service__text {
+  max-width: 34rem;
+  margin-top: 8px;
+  color: #3f3a38;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* What's included: a hairline list, each item led by a blue node */
+.vs-service__included {
+  margin: 12px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+  list-style: none;
+}
+
+.vs-service__included li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 11px;
+  border-bottom: 1px solid var(--rule);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.vs-service__included li::before {
+  content: "";
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+
+.vs-service__cta {
+  margin-top: 28px;
+}
+
+/* ---------------- What the numbers mean ---------------- */
+
+.vs-numbers {
+  padding: 96px var(--pad-x) 104px;
+  background: #000;
+  color: #fff;
+}
+
+.vs-numbers__title {
+  font-size: clamp(28px, 4.2vw, 56px);
+}
+
+.vs-numbers .vd-tag__word {
+  color: #fff;
+}
+
+.vs-numbers__lead {
+  max-width: 36rem;
+  margin-top: 20px;
+  color: rgb(255 255 255 / 0.72);
+  font-size: clamp(1.0625rem, 0.98rem + 0.35vw, 1.25rem);
+  line-height: 1.45;
+}
+
+.vs-numbers__defs {
+  display: grid;
+  margin: 56px 0 0;
+  border-top: 1px solid rgb(255 255 255 / 0.2);
+}
+
+.vs-def {
+  padding-block: 22px;
+  border-bottom: 1px solid rgb(255 255 255 / 0.2);
+}
+
+.vs-def__term {
+  color: var(--yellow);
+  font-size: 1.125rem;
+  font-weight: 850;
+  font-stretch: 112.5%;
+}
+
+.vs-def__meaning {
+  max-width: 32rem;
+  margin: 8px 0 0;
+  color: rgb(255 255 255 / 0.78);
+  line-height: 1.5;
+}
+
+.vs-numbers__principles {
+  display: grid;
+  gap: 12px;
+  margin: 48px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The three principles as the hero wall's type cards */
+.vs-principle {
+  padding: 22px 22px 26px;
+  background: var(--blue);
+}
+
+.vs-principle:nth-child(2) {
+  background: #fff;
+  color: var(--ink);
+}
+
+.vs-principle:nth-child(3) {
+  background: var(--yellow);
+  color: #000;
+}
+
+.vs-principle__title {
+  font-size: 1.375rem;
+  font-weight: 900;
+  font-stretch: 112.5%;
+  line-height: 1.05;
+}
+
+.vs-principle__line {
+  margin-top: 10px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
+/* ---------------- Talk directly ---------------- */
+
+.vs-direct {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 28px;
+  padding: 40px var(--pad-x);
+  background: #fff;
+  color: var(--ink);
+  border-bottom: 1px solid var(--rule);
+}
+
+.vs-direct__title {
+  font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  font-weight: 900;
+  font-stretch: 112.5%;
+}
+
+.vs-direct__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vs-direct__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgb(12 8 7 / 0.2);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  transition: border-color 150ms ease, color 150ms ease;
+}
+
+.vs-direct__link svg {
+  width: 18px;
+  height: 18px;
+  color: var(--blue);
+}
+
+.vs-direct__link:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.vs-direct__link:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+/* ---------------- Breakpoints ---------------- */
+
+@media (min-width: 768px) {
+  .vs-service__pair {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .vs-numbers__defs {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 48px;
+  }
+
+  .vs-numbers__principles {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .vs-hero {
+    padding-top: 168px;
+  }
+
+  .vs-hero__inner {
+    grid-template-columns: 6fr 5fr;
+    gap: 72px;
+    align-items: end;
+  }
+
+  /* The rail beside the services, pinned below the header */
+  .vs-body {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    column-gap: 64px;
+  }
+
+  .vs-rail {
+    display: block;
+    position: sticky;
+    top: 104px;
+    align-self: start;
+    padding-top: 64px;
+  }
+
+  .vs-rail__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .vs-rail__link {
+    position: relative;
+    display: flex;
+    gap: 10px;
+    padding: 7px 0 7px 18px;
+    color: var(--ink);
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .vs-rail__num {
+    color: var(--blue);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The marker for the service in view: a small slanted blue band */
+  .vs-rail__link::before {
+    content: "";
+    position: absolute;
+    top: 9px;
+    left: 0;
+    width: 8px;
+    height: 13px;
+    background: var(--blue);
+    transform: skewX(-12deg) scaleX(0);
+  }
+
+  .vs-rail__link:hover {
+    color: var(--blue);
+  }
+
+  .vs-rail__link:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+  }
+
+  .vs-service__media {
+    aspect-ratio: 4 / 5;
+    max-width: 420px;
+  }
+
+  .vs-stat {
+    right: -12px;
+  }
+
+  .vs-service__grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 56px;
+    align-items: start;
+  }
+
+  .vs-service {
+    padding-block: 88px;
+  }
+}
+
+/* The rail follows the reading: each link lights up while its service
+   crosses the middle of the screen. Each service names its view timeline;
+   the body's timeline-scope lets the rail's links reach it. */
+@media (min-width: 1024px) {
+  @supports (timeline-scope: --x) {
+    /* Inactive links quieter than the one in view, still 4.5:1 */
+    .vs-rail__link {
+      color: #78716c;
+      animation: vs-rail-on linear none;
+      animation-timeline: var(--tl);
+      animation-range: cover 50svh cover calc(100% - 50svh);
+    }
+
+    .vs-rail__link .vs-rail__num {
+      color: inherit;
+    }
+
+    .vs-rail__link::before {
+      animation: vs-rail-marker linear none;
+      animation-timeline: var(--tl);
+      animation-range: cover 50svh cover calc(100% - 50svh);
+    }
+  }
+}
+
+@keyframes vs-rail-on {
+  from,
+  to {
+    color: var(--ink);
+  }
+}
+
+@keyframes vs-rail-marker {
+  from,
+  to {
+    transform: skewX(-12deg) scaleX(1);
+  }
+}

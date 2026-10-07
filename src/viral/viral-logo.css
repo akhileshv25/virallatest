@@ -1,0 +1,59 @@
+/*
+ * Viral Digi Ventures wordmark (see ViralLogo.tsx). Sized by the font-size set
+ * on `.vd-logo`; everything inside is in em. Unlayered like hero.css so
+ * Tailwind's preflight can't override it.
+ */
+
+.vd-logo {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+  font-weight: 900;
+  font-stretch: 125%;
+  text-transform: uppercase;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.vd-logo__mark {
+  display: inline-flex;
+  align-items: baseline;
+  font-size: 0.86em;
+  letter-spacing: -0.01em;
+  line-height: 0.82;
+}
+
+/* The full stop: a blue node, like the hero's */
+.vd-logo__dot {
+  display: inline-block;
+  width: 0.22em;
+  height: 0.22em;
+  margin-left: 0.06em;
+  border-radius: 50%;
+  background: #2340ff;
+}
+
+/* DIGI VENTURES, sized to span about the wordmark's width */
+.vd-logo__tag {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  margin-top: 0.3em;
+  font-size: 0.36em;
+}
+
+.vd-logo__band,
+.vd-logo__rest {
+  transform: skewX(-12deg);
+}
+
+.vd-logo__band {
+  padding: 0.16em 0.45em 0.18em;
+  background: #2340ff;
+  color: #fff;
+}
+
+.vd-logo__rest {
+  color: currentColor;
+}

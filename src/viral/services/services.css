@@ -1,0 +1,346 @@
+/* Viral Digi services (the monz courses row): the pan chapter's styles come
+   from sticky-grid-scroll.css, on a white ground instead of the chapter's
+   charcoal, with service cards (name, line, what's included) and a still foot
+   of the stage — a title set like the wordmark's tag, a button and the
+   description. Without
+   the scroll choreography (reduced motion), the section drops its pinned
+   height and the row scrolls sideways instead, so every service stays
+   reachable. */
+
+.sticky-grid-scroll .vd-courses .pan__wrapper {
+  background-color: #fff;
+}
+
+/* The row rides a little above centre (a bottom margin lifts a centred flex
+   item by half of it), clear of the foot */
+.sticky-grid-scroll .vd-courses .pan__track {
+  margin-bottom: 14vh;
+}
+
+/* ---------------- Foot: title, button, description ---------------- */
+
+.sticky-grid-scroll .vd-courses .vd-courses__foot {
+  position: absolute;
+  right: 0;
+  bottom: calc(var(--fluid) * 48);
+  left: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: clamp(12px, calc(var(--fluid) * 20), 20px);
+  padding-inline: 1.25rem;
+  pointer-events: none;
+}
+
+.sticky-grid-scroll .vd-courses .vd-courses__heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(10px, calc(var(--fluid) * 28), 28px);
+}
+
+/* Set like the wordmark's DIGI VENTURES tag (viral-logo.css): Mona Sans at its
+   heaviest and widest, uppercase, both words slanted — TEN in white on the
+   blue band, SERVICES in ink. Undoes the chapter's full-stage, serif,
+   blended title. */
+.sticky-grid-scroll .vd-courses .pan__title {
+  position: static;
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  width: auto;
+  height: auto;
+  font-family: inherit;
+  font-size: clamp(22px, 3.4vw, 56px);
+  font-weight: 900;
+  font-stretch: 125%;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  mix-blend-mode: normal;
+  will-change: auto;
+}
+
+/* The band, word and button looks come from tag.css; the foot ignores the
+   pointer so the button has to take it back */
+.sticky-grid-scroll .vd-courses .vd-tag__button {
+  pointer-events: auto;
+}
+
+.sticky-grid-scroll .vd-courses .pan__description {
+  position: static;
+  transform: none;
+  color: #0c0807;
+}
+
+/* ---------------- Course cards ---------------- */
+
+/* Portrait cards in the chapter's three widths, so the wave keeps its
+   rhythm. Each card is a size container: everything inside scales with it. */
+.sticky-grid-scroll .vd-courses .pan__item:nth-child(3n + 1) {
+  width: clamp(190px, calc(var(--fluid) * 280), 280px);
+  aspect-ratio: 4 / 5;
+}
+
+.sticky-grid-scroll .vd-courses .pan__item:nth-child(3n + 2) {
+  width: clamp(220px, calc(var(--fluid) * 320), 320px);
+  aspect-ratio: 4 / 5;
+}
+
+.sticky-grid-scroll .vd-courses .pan__item:nth-child(3n) {
+  width: clamp(200px, calc(var(--fluid) * 300), 300px);
+  aspect-ratio: 4 / 5;
+}
+
+.sticky-grid-scroll .vd-courses .vd-course {
+  container-type: inline-size;
+}
+
+.sticky-grid-scroll .vd-courses .pan__image {
+  object-fit: cover;
+}
+
+/* Name, line and what's included over a dark fade at the foot of the photo */
+.sticky-grid-scroll .vd-courses .vd-course__panel {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: clamp(36px, 22cqw, 64px) clamp(12px, 6cqw, 18px)
+    clamp(12px, 6cqw, 18px);
+  background: linear-gradient(
+    to top,
+    rgb(12 8 7 / 0.95) 0%,
+    rgb(12 8 7 / 0.8) 58%,
+    rgb(12 8 7 / 0) 100%
+  );
+  color: #fff;
+}
+
+.sticky-grid-scroll .vd-courses .vd-course__title {
+  font-family: "Times New Roman", Times, serif;
+  font-size: clamp(20px, 10.5cqw, 30px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+.sticky-grid-scroll .vd-courses .vd-course__line {
+  margin-top: clamp(4px, 2.5cqw, 8px);
+  font-size: clamp(11px, 4.6cqw, 14px);
+  line-height: 1.35;
+  opacity: 0.82;
+}
+
+/* What's included: sharp chips, the first in signal blue */
+.sticky-grid-scroll .vd-courses .vd-course__tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(3px, 1.8cqw, 6px);
+  margin-top: clamp(8px, 4cqw, 12px);
+  list-style: none;
+}
+
+.sticky-grid-scroll .vd-courses .vd-course__tool {
+  padding: clamp(3px, 1.4cqw, 4px) clamp(5px, 2.6cqw, 8px);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.45);
+  font-size: clamp(9px, 3.8cqw, 11px);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.sticky-grid-scroll .vd-courses .vd-course__tool:first-child {
+  background: #2340ff;
+  box-shadow: none;
+}
+
+/* ---------------- The pan (wide screens) ---------------- */
+
+/* The section pins (its stage is sticky in a 280vh block) and its own view
+   timeline drives the row: the cards sweep in from the right, tilted and
+   one after another, then the whole row slides left until the last card
+   reaches the edge. Transform only, on the compositor; no JavaScript. */
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .sticky-grid-scroll .block--pan.vd-courses {
+      view-timeline-name: --vd-pan;
+    }
+
+    .sticky-grid-scroll .vd-courses .pan__track {
+      animation: vd-pan linear both;
+      animation-timeline: --vd-pan;
+      animation-range: contain 18% contain 100%;
+    }
+
+    .sticky-grid-scroll .vd-courses .pan__item {
+      animation: vd-pan-in cubic-bezier(0.2, 0.7, 0.2, 1) both;
+      animation-timeline: --vd-pan;
+      animation-range: entry 40% contain calc(4% + var(--i) * 1.6%);
+    }
+
+    .sticky-grid-scroll .vd-courses .pan__item:nth-child(even) {
+      animation-name: vd-pan-in-alt;
+    }
+  }
+}
+
+/* The track is wider than the screen; it travels its own width less one
+   screen, so the last card stops at the right edge */
+@keyframes vd-pan {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% + 100vw));
+  }
+}
+
+@keyframes vd-pan-in {
+  from {
+    transform: translateX(110vw) rotate(12deg);
+  }
+}
+
+@keyframes vd-pan-in-alt {
+  from {
+    transform: translateX(110vw) rotate(-12deg);
+  }
+}
+
+/* ---------------- Phones, and without scroll animation ---------------- */
+
+/* No pin: the title, then a row that swipes sideways and snaps card by
+   card, then the description */
+@media (max-width: 767px), (prefers-reduced-motion: reduce) {
+  .sticky-grid-scroll .block--pan.vd-courses {
+    height: auto;
+  }
+
+  .sticky-grid-scroll .vd-courses .pan__wrapper {
+    position: relative;
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    padding-block: 72px 64px;
+  }
+
+  .sticky-grid-scroll .vd-courses .pan__track {
+    order: 2;
+    margin: 32px 0 0;
+    padding: 0 1.25rem 8px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.25rem;
+    overscroll-behavior-x: contain;
+  }
+
+  .sticky-grid-scroll .vd-courses .pan__item {
+    scroll-snap-align: start;
+  }
+
+  .sticky-grid-scroll .vd-courses .vd-courses__foot {
+    position: static;
+    order: 1;
+  }
+}
+
+/* Phones: every card the same size on one line, and the title and
+   description left-aligned in the page's type, like every other section */
+@media (max-width: 767px) {
+  .sticky-grid-scroll .vd-courses .pan__track {
+    align-items: flex-start;
+    column-gap: 12px;
+  }
+
+  .sticky-grid-scroll .vd-courses .pan__item:nth-child(n) {
+    width: min(78vw, 320px);
+    aspect-ratio: 4 / 5;
+  }
+
+  .sticky-grid-scroll .vd-courses .vd-courses__foot {
+    align-items: flex-start;
+  }
+
+  .sticky-grid-scroll .vd-courses .vd-courses__heading {
+    justify-content: flex-start;
+  }
+
+  .sticky-grid-scroll .vd-courses .pan__description {
+    width: auto;
+    max-width: 34rem;
+    font-family: inherit;
+    font-size: 1.0625rem;
+    line-height: 1.45;
+    text-align: left;
+    text-transform: none;
+    color: #3f3a38;
+  }
+}
+
+@supports not (animation-timeline: view()) {
+  .sticky-grid-scroll .block--pan.vd-courses {
+    height: auto;
+  }
+
+  .sticky-grid-scroll .vd-courses .pan__wrapper {
+    position: relative;
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    padding-block: 88px 72px;
+  }
+
+  .sticky-grid-scroll .vd-courses .pan__track {
+    order: 2;
+    margin: 40px 0 0;
+    padding: 0 1.5rem 8px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .sticky-grid-scroll .vd-courses .pan__item {
+    scroll-snap-align: start;
+  }
+
+  .sticky-grid-scroll .vd-courses .vd-courses__foot {
+    position: static;
+    order: 1;
+  }
+}
+
+/* The whole card opens the service: a pointer-only cover over the card
+   (the title's link is the one keyboards and screen readers use) */
+.sticky-grid-scroll .vd-courses .vd-course__cover {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.sticky-grid-scroll .vd-courses .vd-course__link {
+  position: relative;
+  z-index: 3;
+  color: inherit;
+  text-decoration: none;
+}
+
+.sticky-grid-scroll .vd-courses .vd-course:hover .vd-course__link {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.sticky-grid-scroll .vd-courses .vd-course__link:hover,
+.sticky-grid-scroll .vd-courses .vd-course__link:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.sticky-grid-scroll .vd-courses .vd-course:has(.vd-course__link:focus-visible) {
+  outline: 3px solid #2340ff;
+  outline-offset: 4px;
+}

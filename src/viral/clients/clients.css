@@ -1,0 +1,189 @@
+/*
+ * Client logos (ClientLogos.tsx): one slim strip on white, logos in their
+ * own colours, between the process steps and the testimonials. The loop is paused by default and runs only
+ * while the strip carries `data-active` (PlayWhenVisible); off screen,
+ * content-visibility skips its rendering. Prefixed `vd-` and left unlayered,
+ * like the rest of the design.
+ */
+
+.vd-clients {
+  display: grid;
+  gap: 14px;
+  padding-block: 22px 26px;
+  border-top: 1px solid #e7e5e4;
+  background: #fff;
+  color: #0c0807;
+  color-scheme: light;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 120px;
+}
+
+.vd-clients__title {
+  padding-inline: 1.25rem;
+  color: #57534e;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Says so while the logos are samples */
+.vd-clients__sample {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 6px;
+  box-shadow: inset 0 0 0 1px currentColor;
+  font-size: 0.6875rem;
+  line-height: 1.2;
+}
+
+/* Fade the strip out at both ends */
+.vd-clients__viewport {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.vd-clients__track {
+  display: flex;
+  width: max-content;
+}
+
+.vd-clients__half {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 48px;
+  margin: 0;
+  padding: 0 48px 0 0;
+  list-style: none;
+}
+
+.vd-clients__item {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  height: 32px;
+}
+
+/* Logos in their own colours */
+.vd-clients__logo {
+  width: auto;
+  height: 28px;
+}
+
+/* Placeholder marks: a simple shape and a label, clearly not a real brand */
+.vd-clients__placeholder {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #a8a29e;
+  font-size: 1rem;
+  font-weight: 800;
+  font-stretch: 112.5%;
+  white-space: nowrap;
+}
+
+.vd-clients__shape {
+  width: 20px;
+  height: 20px;
+  background: currentColor;
+}
+
+.vd-clients__shape--circle,
+.vd-clients__shape--dot {
+  border-radius: 50%;
+}
+
+.vd-clients__shape--dot {
+  width: 12px;
+  height: 12px;
+}
+
+.vd-clients__shape--diamond {
+  transform: rotate(45deg) scale(0.8);
+}
+
+.vd-clients__shape--bar {
+  height: 8px;
+}
+
+.vd-clients__shape--ring {
+  border: 4px solid currentColor;
+  border-radius: 50%;
+  background: none;
+}
+
+.vd-clients__shape--slash {
+  width: 8px;
+  transform: skewX(-20deg);
+}
+
+.vd-clients__shape--notch {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 60%, 0 100%);
+}
+
+/* ---------------- Motion: only while on screen ---------------- */
+
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .vd-clients__track {
+    animation: vd-clients-marquee 40s linear infinite paused;
+  }
+
+  .vd-clients[data-active] .vd-clients__track {
+    animation-play-state: running;
+  }
+
+  @media (hover: hover) {
+    .vd-clients[data-active] .vd-clients__viewport:hover .vd-clients__track {
+      animation-play-state: paused;
+    }
+  }
+}
+
+@keyframes vd-clients-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* No motion: one still row, scrollable sideways */
+/* Still: every logo once, as a neat grid (two columns on phones) */
+@media (max-width: 767px), (prefers-reduced-motion: reduce) {
+  .vd-clients__viewport {
+    mask-image: none;
+  }
+
+  .vd-clients__track,
+  .vd-clients__half {
+    display: contents;
+  }
+
+  .vd-clients__viewport {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    justify-items: center;
+    gap: 14px 16px;
+    padding-inline: 1.25rem;
+  }
+
+  .vd-clients__copy {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .vd-clients {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 32px;
+    padding: 22px 0 22px max(1.5rem, calc((100vw - 80rem) / 2));
+  }
+
+  .vd-clients__title {
+    padding-inline: 0;
+    text-align: left;
+  }
+}

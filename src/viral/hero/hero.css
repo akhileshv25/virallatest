@@ -1,0 +1,563 @@
+/*
+ * Viral Digi hero: a full-screen background of four photo panels, each a
+ * slow carousel sliding its photos sideways, the four staggered so the
+ * change travels across the screen (HeroPanels.tsx). A dark
+ * scrim holds the message on the left. CSS only. Every selector is prefixed
+ * `vd-` and the file is deliberately unlayered: Tailwind's preflight lives in
+ * `@layer base`, and unlayered rules beat it whatever order the CSS chunks
+ * load in. Breakpoints match Tailwind's (640 / 768 / 1024).
+ */
+
+/* Black behind iOS overscroll instead of the body's white */
+html:has(.vd-hero) {
+  background: #000;
+  color-scheme: dark;
+}
+
+/* Text selection in signal blue across the whole page */
+html:has(.vd-hero) ::selection {
+  background: #2340ff;
+  color: #fff;
+}
+
+.vd-hero {
+  --vd-blue: #2340ff;
+  --vd-cta: #2340ff; /* signal blue; white text 6.6:1 */
+  --vd-cta-hover: #1a30d1;
+  --vd-yellow: #f2c23f;
+  --vd-rule: rgb(255 255 255 / 0.4);
+
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100svh;
+  overflow: hidden;
+  padding: 112px 1.25rem 112px; /* top clears the fixed 64px header,
+                                   bottom clears the panel captions */
+  background: #000;
+  color: #fff;
+  /* Once scrolled past, the browser skips rendering the hero — including
+     the panels' cycle — until it comes back */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 100svh;
+}
+
+@media (min-width: 1024px) {
+  .vd-hero {
+    padding: 136px 2.5rem 128px; /* clears the 72px header */
+  }
+}
+
+.vd-hero__inner {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+}
+
+.vd-content {
+  max-width: 44rem;
+}
+
+/* ---------------- Panels ---------------- */
+
+/* Two panels on phones, four from md up, split by thin black seams */
+.vd-panels {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3px;
+  background: #000;
+}
+
+/* Phones: one full-width panel, still — simple behind the message */
+.vd-panel:nth-child(n + 2) {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .vd-panels {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .vd-panel:nth-child(n + 2) {
+    display: block;
+  }
+}
+
+.vd-panel {
+  position: relative;
+  overflow: hidden;
+  background: #111114; /* holds the shape while a photo loads */
+}
+
+.vd-panel__img {
+  object-fit: cover;
+}
+
+/* The curtain the panel opens from on load (see Motion); it covers the
+   photo rather than clipping it, so the photo itself paints at once */
+.vd-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #000;
+  transform: scaleY(0);
+  transform-origin: top center;
+  pointer-events: none;
+}
+
+/* Number and area at the foot of each panel */
+.vd-panel__label {
+  position: absolute;
+  right: 16px;
+  bottom: 28px;
+  left: 16px;
+  z-index: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid rgb(255 255 255 / 0.3);
+  color: rgb(255 255 255 / 0.85);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.vd-panel__label span {
+  color: var(--vd-yellow);
+}
+
+@media (min-width: 1024px) {
+  .vd-panel__label {
+    right: 24px;
+    bottom: 36px;
+    left: 24px;
+    font-size: 0.8125rem;
+  }
+}
+
+/* Dark on the left behind the words, lighter to the right; deeper under
+   the header and behind the captions */
+.vd-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0.6),
+      transparent 22%,
+      transparent 70%,
+      rgb(0 0 0 / 0.75)
+    ),
+    rgb(0 0 0 / 0.55);
+}
+
+@media (min-width: 768px) {
+  .vd-scrim {
+    background:
+      linear-gradient(
+        to bottom,
+        rgb(0 0 0 / 0.55),
+        transparent 22%,
+        transparent 72%,
+        rgb(0 0 0 / 0.7)
+      ),
+      linear-gradient(
+        to right,
+        rgb(0 0 0 / 0.88),
+        rgb(0 0 0 / 0.6) 45%,
+        rgb(0 0 0 / 0.2)
+      );
+  }
+}
+
+/* ---------------- Motion ---------------- */
+
+/* On load each panel's black curtain lifts, revealing it from the foot
+   up, left to right. Then each
+   is a carousel on an 18s loop: every six seconds the next photo slides in
+   from the right and pushes the current one out to the left. Panels run
+   0.6s apart. `backwards` keeps a photo waiting off to the right until its
+   turn. Reduced motion shows each panel's last photo, still. */
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .vd-panel::after {
+    animation: vd-open 1000ms cubic-bezier(0.7, 0, 0.2, 1) backwards;
+    animation-delay: calc(var(--p) * 120ms);
+  }
+
+  .vd-panel__img {
+    --step: 6s;
+
+    animation: vd-slide calc(var(--step) * 3) linear infinite backwards;
+    /* The first photo starts already in place; each next one is a step
+       later */
+    animation-delay: calc(var(--p) * 0.6s - 1s + var(--i) * var(--step));
+  }
+
+  .vd-rise {
+    animation: vd-rise 700ms cubic-bezier(0.2, 0.7, 0.2, 1) 300ms backwards;
+  }
+}
+
+/* The curtain lifts from the foot up, revealing the panel bottom first */
+@keyframes vd-open {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0);
+  }
+}
+
+/* A third of the loop on screen: slide in, hold, slide out */
+@keyframes vd-slide {
+  0% {
+    translate: 100% 0;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  5%,
+  33.33% {
+    translate: 0 0;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  38.33%,
+  100% {
+    translate: -100% 0;
+  }
+}
+
+@keyframes vd-rise {
+  from {
+    opacity: 0;
+    translate: 0 20px;
+  }
+}
+
+/* ---------------- Message ---------------- */
+
+/* "A digital marketing agency from Coimbatore": a small pill above the
+   headline, ending in a blue chip with a location pin */
+.vd-pill {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin: 0 0 22px;
+  padding: 5px 5px 5px 16px;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.45);
+  font-size: 0.8125rem;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+.vd-pill__text {
+  color: rgb(255 255 255 / 0.82);
+}
+
+.vd-pill__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px 5px 10px;
+  border-radius: 999px;
+  background: #2340ff;
+  color: #fff;
+  font-weight: 800;
+  font-stretch: 112.5%;
+}
+
+.vd-pill__pin {
+  flex: none;
+  width: 13px;
+  height: 13px;
+}
+
+
+@media (min-width: 1024px) {
+  .vd-pill {
+    margin-bottom: 28px;
+    font-size: 0.875rem;
+  }
+}
+
+.vd-h1 {
+  margin: 0;
+  font-size: clamp(2.5rem, 15vw, 4.5rem);
+  line-height: 0.9;
+  font-weight: 850;
+  font-stretch: 125%;
+  letter-spacing: -0.01em;
+}
+
+.vd-lead {
+  max-width: 34rem;
+  margin: 20px 0 0;
+  font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+/* "with" + the MONZ wordmark stay on one line */
+.vd-lead__brand {
+  white-space: nowrap;
+}
+
+/* A touch larger than the words around it; the wordmark's inline-flex box
+   takes its baseline from the letters, so it sits on the line like text */
+.vd-lead__logo {
+  margin-left: 0.2em;
+  font-size: 1.3em;
+}
+
+@media (min-width: 640px) {
+  .vd-h1 {
+    font-size: clamp(4.5rem, 12.5vw, 6.5rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .vd-h1 {
+    font-size: clamp(5rem, 8vw, 8rem);
+  }
+
+  .vd-lead {
+    margin-top: 28px;
+  }
+}
+
+/* ---------------- Full stop ---------------- */
+
+/* The full stop: a blue dot. An empty inline-block's baseline is its bottom
+   edge, so the dot sits on the text baseline at any size. */
+.vd-anchor {
+  display: inline-block;
+  width: 0.24em;
+  height: 0.24em;
+  margin-left: 0.04em;
+  border-radius: 50%;
+  background: var(--vd-blue);
+}
+
+@media (forced-colors: active) {
+  .vd-anchor {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+}
+
+/* Used by the primary button's hover (the share glyph's links redraw) */
+@keyframes vd-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ---------------- Actions ---------------- */
+
+.vd-actions {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.vd-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding-inline: 28px;
+  border: 1px solid transparent;
+  border-radius: 2px; /* the network's nodes stay the only circles */
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  text-decoration: none;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.vd-cta:focus-visible {
+  outline: 2px solid var(--vd-yellow);
+  outline-offset: 3px;
+}
+
+/* Start a project: the primary action in signal blue, fronted by a small
+   share glyph — the hero's network in miniature */
+.vd-cta--primary {
+  min-height: 52px;
+  padding-inline: 20px 26px;
+  gap: 10px;
+  background: var(--vd-cta);
+  box-shadow: 0 12px 26px -14px rgb(35 64 255 / 0.9);
+  font-size: 1rem;
+  transition:
+    background-color 150ms ease,
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.vd-cta--primary:hover {
+  background: var(--vd-cta-hover);
+}
+
+.vd-glyph {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  overflow: visible;
+}
+
+.vd-glyph__link {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-dasharray: 1;
+}
+
+.vd-glyph__node {
+  fill: currentColor;
+}
+
+.vd-glyph__node--far {
+  fill: var(--vd-yellow);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  /* On hover the button lifts and the glyph's links redraw — a share going
+     out from the button you're about to press */
+  .vd-cta--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 32px -16px rgb(35 64 255 / 0.95);
+  }
+
+  .vd-cta--primary:hover .vd-glyph__link {
+    animation: vd-draw 360ms ease-out both;
+  }
+}
+
+
+/* See services: an outline that becomes a design tool's selection box on
+   hover or keyboard focus — a marching dashed edge and corner handles */
+.vd-cta--secondary {
+  position: relative;
+  border-color: var(--vd-rule);
+  background: rgb(0 0 0 / 0.35);
+}
+
+.vd-cta--secondary::before,
+.vd-cta--secondary::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.vd-cta--secondary::before {
+  inset: -1px;
+  background:
+    linear-gradient(90deg, #fff 50%, transparent 0) 0 0 / 10px 1.5px repeat-x,
+    linear-gradient(90deg, #fff 50%, transparent 0) 0 100% / 10px 1.5px
+      repeat-x,
+    linear-gradient(0deg, #fff 50%, transparent 0) 0 0 / 1.5px 10px repeat-y,
+    linear-gradient(0deg, #fff 50%, transparent 0) 100% 0 / 1.5px 10px
+      repeat-y;
+}
+
+.vd-cta--secondary::after {
+  inset: -4px;
+  background:
+    linear-gradient(#2340ff, #2340ff) 0 0 / 7px 7px no-repeat,
+    linear-gradient(#2340ff, #2340ff) 100% 0 / 7px 7px no-repeat,
+    linear-gradient(#2340ff, #2340ff) 0 100% / 7px 7px no-repeat,
+    linear-gradient(#2340ff, #2340ff) 100% 100% / 7px 7px no-repeat;
+}
+
+.vd-cta--secondary:hover,
+.vd-cta--secondary:focus-visible {
+  border-color: transparent;
+  background: rgb(255 255 255 / 0.06);
+}
+
+/* The selection box is the focus indicator here */
+.vd-cta--secondary:focus-visible {
+  outline: none;
+}
+
+.vd-cta--secondary:hover::before,
+.vd-cta--secondary:hover::after,
+.vd-cta--secondary:focus-visible::before,
+.vd-cta--secondary:focus-visible::after {
+  opacity: 1;
+}
+
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .vd-cta--secondary:hover::before,
+  .vd-cta--secondary:focus-visible::before {
+    animation: vd-ants 0.6s linear infinite;
+  }
+}
+
+@keyframes vd-ants {
+  to {
+    background-position:
+      10px 0,
+      -10px 100%,
+      0 -10px,
+      100% 10px;
+  }
+}
+
+.vd-cta__icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .vd-cta:active {
+    transform: translateY(1px);
+  }
+}
+
+@media (min-width: 640px) {
+  .vd-actions {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 28px;
+  }
+
+  .vd-cta {
+    min-height: 52px;
+    font-size: 1rem;
+  }
+
+  .vd-cta__icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .vd-actions {
+    margin-top: 36px;
+  }
+}

@@ -1,0 +1,338 @@
+/*
+ * Viral Digi enquiry (the monz enquiry section, re-cut): big type, a
+ * slanted band and a photo cut into the band's shape on the left, the form
+ * on the right. The form sits in a card with a hard blue offset shadow. Prefixed `vd-` and left
+ * unlayered, like hero.css. Breakpoints match Tailwind's.
+ */
+
+.vd-enquire {
+  --vd-blue: #2340ff;
+  --vd-blue-dark: #1a30d1;
+  --vd-ink: #0c0807;
+  --vd-rule: #d6d3d1;
+  --vd-hint: #57534e;
+
+  padding-block: 72px;
+  background: #fff;
+  color: var(--vd-ink);
+  color-scheme: light;
+  scroll-margin-top: 24px;
+  /* Off screen, the browser skips rendering the section and its blinking,
+     glancing eyes (the form stays in the tab order and accessibility tree) */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1100px;
+}
+
+.vd-enquire__inner {
+  display: grid;
+  gap: 56px;
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .vd-enquire {
+    padding-block: 104px;
+  }
+
+  .vd-enquire__inner {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .vd-enquire__inner {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    column-gap: 72px;
+    align-items: center;
+  }
+}
+
+/* ---------------- Intro ---------------- */
+
+.vd-enquire__title {
+  margin: 0;
+  font-size: clamp(2.75rem, 12vw, 5rem);
+  line-height: 0.92;
+  font-weight: 900;
+  font-stretch: 125%;
+  letter-spacing: -0.01em;
+}
+
+.vd-enquire__title span {
+  display: block;
+}
+
+.vd-enquire__title-accent {
+  color: var(--vd-blue);
+}
+
+/* The invitation on a slanted band, like DIGI in the wordmark */
+.vd-enquire__offer {
+  display: inline-block;
+  margin: 24px 0 0;
+  padding: 0.3em 0.75em 0.36em;
+  background: var(--vd-blue);
+  color: #fff;
+  font-size: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
+  line-height: 1.1;
+  font-weight: 800;
+  font-stretch: 112.5%;
+  transform: skewX(-12deg);
+}
+
+/* What happens after the form, in plain words */
+.vd-enquire__lead {
+  max-width: 30rem;
+  margin: 24px 0 0;
+  color: #3f3a38;
+  font-size: clamp(1.0625rem, 0.98rem + 0.35vw, 1.25rem);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+/* The form's answer after submit; empty (and taking no room) until then */
+.vd-form__status {
+  margin: 0;
+  color: var(--vd-ink);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.vd-form__status:empty {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .vd-enquire__title {
+    font-size: clamp(3.25rem, 5.2vw, 5rem);
+  }
+}
+
+/* ---------------- The photo ---------------- */
+
+/* A photo cut into the site's slanted band shape (the DIGI band and the
+   section titles' cut), with a gold band offset behind it. The photo
+   drifts a little inside its frame as the section scrolls by. */
+.vd-enquire__visual {
+  position: relative;
+  max-width: 460px;
+  margin-top: 40px;
+}
+
+.vd-enquire__band {
+  position: absolute;
+  inset: 10% -4% -6% 8%;
+  background: #f2c23f;
+  clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+}
+
+.vd-enquire__photo {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+  background: #141416; /* holds the shape while the photo loads */
+  clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+}
+
+.vd-enquire__img {
+  object-fit: cover;
+  transform: scale(1.14);
+}
+
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .vd-enquire__img {
+      animation: vd-enquire-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes vd-enquire-drift {
+  from {
+    transform: scale(1.14) translateY(-5%);
+  }
+  to {
+    transform: scale(1.14) translateY(5%);
+  }
+}
+
+@media (max-width: 1023px) {
+  .vd-enquire__visual {
+    max-width: 420px;
+  }
+}
+
+/* ---------------- Form ---------------- */
+
+/* The card: a black frame with a hard blue offset shadow */
+.vd-form {
+  display: grid;
+  gap: 22px;
+  margin: 0 14px 14px 0; /* room for the offset shadow */
+  padding: 28px 22px 26px;
+  border: 2px solid var(--vd-ink);
+  background: #fff;
+  box-shadow: 10px 10px 0 var(--vd-blue);
+}
+
+@media (min-width: 640px) {
+  .vd-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 26px 24px;
+    padding: 40px 40px 36px;
+    box-shadow: 14px 14px 0 var(--vd-blue);
+  }
+
+  .vd-form__title,
+  .vd-field--full,
+  .vd-submit,
+  .vd-form__status {
+    grid-column: 1 / -1;
+  }
+}
+
+.vd-form__title {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  line-height: 1.1;
+  font-weight: 900;
+  font-stretch: 112.5%;
+}
+
+.vd-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.vd-field__label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  transition: color 150ms ease;
+}
+
+.vd-field__wrap {
+  position: relative;
+}
+
+.vd-field__control {
+  display: block;
+  width: 100%;
+  height: 48px;
+  padding: 0 2px;
+  border: 0;
+  border-bottom: 2px solid var(--vd-rule);
+  border-radius: 0;
+  background: #fff;
+  color: var(--vd-ink);
+  font: inherit;
+  font-size: 1rem;
+  outline: none;
+  appearance: none;
+}
+
+select.vd-field__control {
+  padding-right: 28px;
+  cursor: pointer;
+}
+
+.vd-field__control::placeholder {
+  color: var(--vd-hint);
+}
+
+/* An unanswered select shows its prompt in the hint colour */
+select.vd-field__control:invalid {
+  color: var(--vd-hint);
+}
+
+.vd-field__control option {
+  color: var(--vd-ink);
+}
+
+/* Focus: a blue line draws in from the left and the label turns blue */
+.vd-field__line {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--vd-blue);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.vd-field__control:focus + .vd-field__line {
+  transform: scaleX(1);
+}
+
+.vd-field:has(.vd-field__control:focus) .vd-field__label {
+  color: var(--vd-blue);
+}
+
+.vd-field__chevron {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  pointer-events: none;
+}
+
+@media (max-width: 767px), (prefers-reduced-motion: reduce) {
+  .vd-field__line {
+    transition: none;
+  }
+}
+
+/* ---------------- Submit ---------------- */
+
+.vd-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  margin-top: 6px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--vd-blue);
+  box-shadow: 0 12px 26px -14px rgb(35 64 255 / 0.9);
+  color: #fff;
+  font: inherit;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.vd-submit:hover {
+  background: var(--vd-blue-dark);
+}
+
+.vd-submit:focus-visible {
+  outline: 2px solid var(--vd-ink);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .vd-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 32px -16px rgb(35 64 255 / 0.95);
+  }
+}
+
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .vd-submit:active {
+    transform: translateY(1px);
+  }
+}

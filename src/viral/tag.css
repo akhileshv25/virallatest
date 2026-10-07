@@ -1,0 +1,69 @@
+/* The wordmark tag's look (DIGI VENTURES, viral-logo.css — first cut as the
+   monz logo's CREATIVE SCHOOL) for section titles and their buttons. Each
+   rule is written twice: plain, for ordinary sections, and under .sticky-grid-scroll, to out-rank the scroll chapters'
+   own resets (`.sticky-grid-scroll *`, `.sticky-grid-scroll a`). Inside those
+   chapters the sections set the title's font and size themselves. */
+
+/* A title set like the tag, for sections outside the scroll chapters */
+.vd-tag {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3em;
+  font-weight: 900;
+  font-stretch: 125%;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+/* Both words slanted: the first in white on the blue band, the second in ink */
+.vd-tag__band,
+.vd-tag__word,
+.sticky-grid-scroll .vd-tag__band,
+.sticky-grid-scroll .vd-tag__word {
+  display: inline-block;
+  transform: skewX(-12deg);
+}
+
+.vd-tag__band,
+.sticky-grid-scroll .vd-tag__band {
+  padding: 0.12em 0.4em 0.14em;
+  background: #2340ff;
+  color: #fff;
+}
+
+.vd-tag__word,
+.sticky-grid-scroll .vd-tag__word {
+  color: #0c0807;
+}
+
+/* A section's one button: slanted like the title, filled with ink so it
+   doesn't read as a second blue band; blue on hover */
+.vd-tag__button,
+.sticky-grid-scroll .vd-tag__button {
+  display: inline-block;
+  padding: 0.75em 1.4em;
+  background: #0c0807;
+  color: #fff;
+  font-size: clamp(11px, 1vw, 14px);
+  font-weight: 700;
+  font-stretch: 125%;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+  transform: skewX(-12deg);
+  transition: background-color 150ms ease;
+}
+
+.vd-tag__button:hover,
+.sticky-grid-scroll .vd-tag__button:hover {
+  background: #2340ff;
+  text-decoration: none;
+}
+
+.vd-tag__button:focus-visible,
+.sticky-grid-scroll .vd-tag__button:focus-visible {
+  outline: 2px solid #2340ff;
+  outline-offset: 3px;
+}

@@ -1,0 +1,337 @@
+/*
+ * One growth engine (ViralEngine.tsx). The finished state is the base: a
+ * heading cell and ten services, each a thumbnail with its name and line
+ * beside it — no card boxes, just the photo, the words and the grid's
+ * rhythm. On wide screens with scroll-driven animation, the section pins
+ * and the grid starts as a seamless photo wall: each `.vd-engine__wall`
+ * reaches past its cell to tile the stage (--et/--er/--eb/--el, set per
+ * cell), and four solid covers grow in from its edges until only the
+ * thumbnail shows — transform-only, so nothing re-rasterizes.
+ * Prefixed `vd-` and left unlayered, like the rest of the design.
+ */
+
+.vd-engine {
+  --gap: 24px;
+  --half: calc(var(--gap) / 2);
+  --pad-x: max(1.5rem, calc((100vw - 80rem) / 2));
+  --pad-t: 104px; /* clears the fixed header */
+  --pad-b: 40px;
+  --thumb: 0.4; /* the thumbnail's share of a cell's width */
+
+  background: #fff;
+  color: #0c0807;
+  color-scheme: light;
+}
+
+/* ---------------- Finished layout (every screen) ---------------- */
+
+.vd-engine__stage {
+  padding: 88px var(--pad-x);
+}
+
+.vd-engine__grid {
+  display: grid;
+  gap: 32px var(--gap);
+}
+
+.vd-engine__head {
+  position: relative;
+}
+
+.vd-engine__title {
+  font-size: clamp(28px, 3.4vw, 48px);
+}
+
+.vd-engine__lead {
+  max-width: 34rem;
+  margin-top: 18px;
+  color: #3f3a38;
+  font-size: clamp(1rem, 0.94rem + 0.25vw, 1.125rem);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.vd-engine__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+  margin-top: 22px;
+}
+
+.vd-engine__link {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: #2340ff;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.vd-engine__link:hover {
+  color: #2340ff;
+}
+
+/* A service: the thumbnail on the left, the words beside it */
+.vd-engine__item {
+  position: relative;
+  min-height: 132px;
+  padding-left: calc(var(--thumb) * 100% + 16px);
+}
+
+.vd-engine__wall {
+  position: absolute;
+  inset: 0 calc((1 - var(--thumb)) * 100%) 0 0;
+  overflow: hidden;
+  background: #141416; /* holds the shape while a photo loads */
+}
+
+.vd-engine__img {
+  object-fit: cover;
+}
+
+/* The covers only exist on the wall (wide screens); the finished layout
+   simply sizes the wall to the thumbnail */
+.vd-engine__cover {
+  display: none;
+}
+
+/* The heading's photo only exists in the wall */
+.vd-engine__wall--head {
+  display: none;
+}
+
+.vd-engine__text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  padding-block: 4px;
+}
+
+.vd-engine__name {
+  font-size: 1.0625rem;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+/* The whole cell opens the service: the name's link stretches over it */
+.vd-engine__link-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+.vd-engine__item:hover .vd-engine__name,
+.vd-engine__link-card:focus-visible {
+  color: #2340ff;
+}
+
+.vd-engine__item:has(.vd-engine__link-card:focus-visible) {
+  outline: 2px solid #2340ff;
+  outline-offset: 6px;
+}
+
+.vd-engine__line {
+  margin-top: 6px;
+  color: #57534e;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+@media (min-width: 640px) {
+  .vd-engine__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .vd-engine__head {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---------------- Wide screens: the 4×3 grid ---------------- */
+
+@media (min-width: 1024px) {
+  .vd-engine__stage {
+    padding: var(--pad-t) var(--pad-x) var(--pad-b);
+  }
+
+  .vd-engine__grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--gap);
+  }
+
+  .vd-engine__head {
+    grid-column: span 2;
+    align-self: center;
+  }
+
+  .vd-engine__item {
+    min-height: 0;
+  }
+
+  /* The wall photo's full reach: its cell plus its share of the gaps and
+     the stage's padding */
+  .vd-engine__wall {
+    inset: calc(-1 * var(--et)) calc(-1 * var(--er)) calc(-1 * var(--eb))
+      calc(-1 * var(--el));
+  }
+
+  /* The covers, at rest, hide everything but the thumbnail — the left
+     `--thumb` of the cell, full height — in the stage's white. Each sits on
+     its edge and scales in from it, so a cover's growth reads exactly like
+     a clip edge moving in. Solid colour, so the compositor scales them
+     without rasterizing anything. */
+  .vd-engine__cover {
+    position: absolute;
+    display: block;
+    z-index: 1;
+    background: #fff;
+  }
+
+  .vd-engine__cover--t {
+    inset: 0 0 auto;
+    height: var(--et);
+    transform-origin: top;
+  }
+
+  .vd-engine__cover--b {
+    inset: auto 0 0;
+    height: var(--eb);
+    transform-origin: bottom;
+  }
+
+  .vd-engine__cover--l {
+    inset: 0 auto 0 0;
+    width: var(--el);
+    transform-origin: left;
+  }
+
+  .vd-engine__cover--r {
+    inset: 0 0 0 auto;
+    width: calc(100% - var(--el) - var(--thumb) * (100% - var(--el) - var(--er)));
+    transform-origin: right;
+  }
+
+  /* The words sit above the covers (which reach under them) */
+  .vd-engine__text {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+/* ---------------- The scroll: wall to grid ---------------- */
+
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* Tall enough to pin the stage for the story, which scrubs with the
+       section's own view timeline */
+    .vd-engine {
+      height: 260svh;
+      view-timeline-name: --vd-engine;
+    }
+
+    .vd-engine__stage {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      overflow: hidden;
+    }
+
+    /* Three rows that share the pinned stage, however tall it is */
+    .vd-engine__grid {
+      height: 100%;
+      grid-template-rows: repeat(3, minmax(0, 1fr));
+    }
+
+    /* The covers grow from nothing (the full photo, edge to edge) to their
+       resting size (the thumbnail) */
+    .vd-engine__cover--t,
+    .vd-engine__cover--b {
+      animation: vd-engine-cover-y linear both;
+      animation-timeline: --vd-engine;
+      animation-range: contain 4% contain 58%;
+    }
+
+    .vd-engine__cover--l,
+    .vd-engine__cover--r {
+      animation: vd-engine-cover-x linear both;
+      animation-timeline: --vd-engine;
+      animation-range: contain 4% contain 58%;
+    }
+
+    /* The heading's photo leads, then lifts away to show the copy */
+    .vd-engine__wall--head {
+      display: block;
+      z-index: 2;
+      animation: vd-engine-lift linear both;
+      animation-timeline: --vd-engine;
+      animation-range: contain 2% contain 34%;
+    }
+
+    /* The copy follows its photo out; the services' words follow their
+       thumbnails in */
+    .vd-engine__copy,
+    .vd-engine__text {
+      animation: vd-engine-write linear both;
+      animation-timeline: --vd-engine;
+      animation-range: contain 46% contain 70%;
+    }
+
+    .vd-engine__copy {
+      animation-range: contain 26% contain 46%;
+    }
+  }
+}
+
+@keyframes vd-engine-cover-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes vd-engine-cover-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes vd-engine-lift {
+  to {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+@keyframes vd-engine-write {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+/* "One growth engine" across the heading's photo while it's a wall tile,
+   centred on the cell rather than on the photo's full reach (which runs up
+   under the header) */
+.vd-engine__label {
+  position: absolute;
+  inset: 0;
+  padding: var(--et) var(--er) var(--eb) var(--el);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
+  background: rgb(0 0 0 / 0.45);
+  color: #fff;
+  font-size: clamp(32px, 4vw, 64px);
+  font-weight: 900;
+  font-stretch: 125%;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.vd-engine__label-word {
+  display: inline-block;
+  transform: skewX(-12deg);
+}

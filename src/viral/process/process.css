@@ -1,0 +1,308 @@
+/*
+ * How we work (ViralProcess.tsx), as a skyline: five landmarks, each taller
+ * than the last, on one ground line, with a trend line and nodes across
+ * their tips and each step's words beneath. White ground. Prefixed `vd-`
+ * and left unlayered, like the rest of the design. Breakpoints match
+ * Tailwind's.
+ */
+
+.vd-steps {
+  --ink: #0c0807;
+  --blue: #2340ff;
+  --yellow: #f2c23f;
+  --rule: #e7e5e4;
+
+  padding-block: 88px 104px;
+  background: #fff;
+  color: var(--ink);
+  color-scheme: light;
+}
+
+.vd-steps__inner {
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+/* ---------------- Heading ---------------- */
+
+.vd-steps__head {
+  display: grid;
+  gap: 24px;
+}
+
+.vd-steps__title {
+  font-size: clamp(28px, 4.2vw, 56px);
+}
+
+.vd-steps__lead {
+  max-width: 32rem;
+  color: #3f3a38;
+  font-size: clamp(1.0625rem, 0.98rem + 0.35vw, 1.25rem);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.vd-steps__cta {
+  margin-top: 22px;
+}
+
+/* ---------------- Steps (phones: a row each) ---------------- */
+
+.vd-steps__chart {
+  position: relative;
+  margin-top: 48px;
+}
+
+.vd-steps__trend {
+  display: none;
+}
+
+.vd-steps__list {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+  list-style: none;
+}
+
+.vd-step {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 18px;
+  align-items: end;
+  padding-block: 20px;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* The landmark's plot: on phones a fixed box, the landmark at its
+   stepped height within it */
+.vd-step__site {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 112px;
+}
+
+.vd-step__building {
+  display: block;
+  width: 100%;
+  height: var(--h);
+  overflow: visible;
+}
+
+.vd-step__node {
+  display: none;
+}
+
+.vd-step__num {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 900;
+  font-stretch: 125%;
+  line-height: 0.9;
+}
+
+.vd-step__title {
+  margin-top: 8px;
+  font-size: 1.125rem;
+  font-weight: 850;
+  font-stretch: 112.5%;
+  line-height: 1.1;
+}
+
+.vd-step__line {
+  margin-top: 6px;
+  color: #3f3a38;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+/* The landmark, and how tall it really is */
+.vd-step__landmark {
+  margin-top: 10px;
+  color: #78716c;
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.vd-step__landmark strong {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+/* Tones: the landmark and the step number share a colour */
+.vd-step--ink {
+  color: var(--ink);
+}
+
+.vd-step--blue .vd-step__building,
+.vd-step--blue .vd-step__num {
+  color: var(--blue);
+}
+
+/* The Burj in a deeper gold than the page's yellow, to hold its shape on
+   white */
+.vd-step--yellow .vd-step__building {
+  color: #e2a614;
+}
+
+.vd-step--yellow .vd-step__num {
+  color: #9a7000; /* the gold, deep enough to read as text (3:1 large) */
+}
+
+/* ---------------- Wide screens: the skyline ---------------- */
+
+@media (min-width: 768px) {
+  .vd-steps {
+    padding-block: 120px 128px;
+  }
+
+  .vd-steps__inner {
+    padding-inline: 1.5rem;
+  }
+
+  .vd-steps__head {
+    grid-template-columns: 1fr 1fr;
+    align-items: end;
+    gap: 48px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .vd-steps__chart {
+    --sky: clamp(320px, 46svh, 460px);
+
+    margin-top: 64px;
+  }
+
+  /* Five columns: the landmark on the ground line, the words beneath */
+  .vd-steps__list {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    column-gap: 24px;
+    border-top: 0;
+  }
+
+  .vd-step {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+
+  .vd-step__site {
+    height: var(--sky);
+    border-bottom: 3px solid var(--ink);
+  }
+
+  .vd-step__building {
+    height: var(--h);
+    transform-origin: bottom center;
+  }
+
+  /* A node at each landmark's tip, where the trend line passes */
+  .vd-step__node {
+    position: absolute;
+    bottom: calc(var(--h) - 9px);
+    left: 50%;
+    display: block;
+    width: 18px;
+    height: 18px;
+    margin-left: -9px;
+    border: 4px solid #fff;
+    border-radius: 50%;
+    background: var(--blue);
+    z-index: 2;
+  }
+
+  .vd-step--blue .vd-step__node {
+    background: var(--yellow);
+  }
+
+  .vd-step__text {
+    padding-top: 22px;
+  }
+
+  .vd-step__num {
+    font-size: clamp(2.25rem, 1.6rem + 1.6vw, 3.25rem);
+  }
+
+  .vd-step__title {
+    margin-top: 12px;
+    font-size: clamp(1.125rem, 0.95rem + 0.5vw, 1.375rem);
+  }
+
+  /* The trend line, over the skyline's area only (not the words) */
+  .vd-steps__trend {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: var(--sky);
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .vd-steps__trend polyline {
+    fill: none;
+    stroke: var(--blue);
+    stroke-width: 2.5;
+    stroke-linejoin: round;
+    stroke-dasharray: 6 6;
+    vector-effect: non-scaling-stroke;
+  }
+}
+
+/* ---------------- The rise ---------------- */
+
+/* As the skyline scrolls in, the landmarks rise from the ground in turn
+   and the line reveals across their tips. Transform and clip only; without
+   support (or with reduced motion) the skyline is simply there. */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .vd-steps__chart {
+      view-timeline-name: --vd-steps;
+    }
+
+    .vd-step__building,
+    .vd-step__node {
+      animation: vd-steps-rise linear both;
+      animation-timeline: --vd-steps;
+      animation-range: entry calc(var(--s) * 10%) entry calc(50% + var(--s) * 10%);
+    }
+
+    .vd-step__node {
+      animation-name: vd-steps-node;
+    }
+
+    .vd-steps__trend {
+      animation: vd-steps-draw linear both;
+      animation-timeline: --vd-steps;
+      animation-range: entry 30% entry 100%;
+    }
+  }
+}
+
+@keyframes vd-steps-rise {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes vd-steps-node {
+  0%,
+  80% {
+    transform: scale(0);
+  }
+}
+
+@keyframes vd-steps-draw {
+  from {
+    clip-path: inset(-20px 100% -20px 0);
+  }
+  to {
+    clip-path: inset(-20px 0 -20px 0);
+  }
+}

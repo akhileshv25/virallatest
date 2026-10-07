@@ -1,0 +1,239 @@
+/*
+ * Ported from codrops-sticky-grid-scroll (src/styles/base.css + index.css).
+ *
+ * The original relies on a "fluid rem" trick: `html { font-size: calc(100vw
+ * / 1440) }`, then every measurement is in `rem` so the whole layout scales
+ * linearly with viewport width. `rem` always resolves against the root
+ * `<html>` element, and this app's `<html>` is shared with the global
+ * `Header`, so we can't repoint the root font-size without shrinking the
+ * header on this route. Instead every ported value uses a scoped custom
+ * property, `--fluid: calc(100vw / 1440)`, defined on the `.sticky-grid-scroll`
+ * wrapper (custom properties inherit normally, independent of font-size).
+ * `Nrem` in the source becomes `calc(var(--fluid) * N)` here, with `clamp()`
+ * added on the handful of large text/layout values so nothing goes
+ * illegibly small on narrow phones or oversized on ultra-wide monitors —
+ * the source has no upper/lower bound on its scaling.
+ */
+
+.sticky-grid-scroll {
+  --fluid: calc(100vw / 1440);
+  --color-text: #000;
+  --color-bg: #fff;
+
+  position: relative;
+  width: 100%;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.sticky-grid-scroll * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.sticky-grid-scroll ul,
+.sticky-grid-scroll ol {
+  list-style: none;
+}
+
+.sticky-grid-scroll picture,
+.sticky-grid-scroll img,
+.sticky-grid-scroll svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.sticky-grid-scroll a {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sticky-grid-scroll button {
+  display: block;
+  border: 0;
+  border-radius: 0;
+  background: 0 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+/* Backstage behind every chapter, revealed when a section recedes at a seam */
+.sticky-grid-scroll .sgs-main {
+  position: relative;
+  background-color: #0b0b0c;
+}
+
+.sticky-grid-scroll em {
+  font-style: italic;
+}
+
+/* ---------------- Block letter ---------------- */
+
+@property --sgs-lane-a {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 12%;
+}
+
+@property --sgs-lane-b {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 82%;
+}
+
+@property --sgs-lane-c {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 20%;
+}
+
+@property --sgs-lane-d {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 90%;
+}
+
+.sticky-grid-scroll .block--letter {
+  height: 280vh;
+}
+
+.sticky-grid-scroll .letter__wrapper {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 0 calc(var(--fluid) * 24);
+  background-color: var(--color-bg);
+  overflow: hidden;
+  will-change: transform, background-color;
+}
+
+.sticky-grid-scroll .letter__type {
+  overflow: hidden;
+}
+
+.sticky-grid-scroll .letter__word {
+  display: block;
+  font-family: Arial, sans-serif;
+  font-size: clamp(64px, calc(var(--fluid) * 260), 260px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  background-repeat: no-repeat;
+  background-size: 25.5% 180%;
+  background-position:
+    0% var(--sgs-lane-a),
+    33.333% var(--sgs-lane-b),
+    66.667% var(--sgs-lane-c),
+    100% var(--sgs-lane-d);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  will-change: transform, background-position;
+}
+
+.sticky-grid-scroll .letter__content {
+  margin-top: calc(var(--fluid) * 40);
+  color: #fff;
+  text-align: center;
+}
+
+.sticky-grid-scroll .letter__description {
+  width: min(85vw, clamp(240px, calc(var(--fluid) * 455), 455px));
+  font-size: 14px;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+/* ---------------- Block pan ---------------- */
+
+.sticky-grid-scroll .block--pan {
+  height: 280vh;
+}
+
+.sticky-grid-scroll .pan__wrapper {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  height: 100vh;
+  background-color: #232326;
+  color: var(--color-bg);
+  overflow: hidden;
+  will-change: transform;
+}
+
+.sticky-grid-scroll .pan__title {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  font-family: "Times New Roman", Times, serif;
+  font-size: clamp(56px, calc(var(--fluid) * 200), 200px);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  will-change: transform;
+  z-index: 2;
+}
+
+.sticky-grid-scroll .pan__track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  column-gap: calc(var(--fluid) * 48);
+  padding: 0 calc(var(--fluid) * 96);
+  will-change: transform;
+  z-index: 1;
+}
+
+.sticky-grid-scroll .pan__item {
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.sticky-grid-scroll .pan__item:nth-child(3n + 1) {
+  width: clamp(180px, calc(var(--fluid) * 300), 300px);
+  aspect-ratio: 3 / 4;
+}
+
+.sticky-grid-scroll .pan__item:nth-child(3n + 2) {
+  width: clamp(240px, calc(var(--fluid) * 400), 400px);
+  aspect-ratio: 4 / 3;
+}
+
+.sticky-grid-scroll .pan__item:nth-child(3n) {
+  width: clamp(200px, calc(var(--fluid) * 340), 340px);
+  aspect-ratio: 1;
+}
+
+.sticky-grid-scroll .pan__description {
+  position: absolute;
+  bottom: calc(var(--fluid) * 48);
+  left: 50%;
+  transform: translate3d(-50%, 0, 0);
+  width: min(85vw, clamp(240px, calc(var(--fluid) * 455), 455px));
+  font-size: 14px;
+  line-height: 1.3;
+  text-transform: uppercase;
+  text-align: center;
+  z-index: 2;
+}

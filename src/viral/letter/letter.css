@@ -1,0 +1,144 @@
+/* The VIRAL word in the wordmark's cut (Mona Sans, heaviest and widest, set
+   on the section by the page) instead of the story's Arial. On wide screens
+   the section's scroll timeline raises it and drifts the --sgs-lane-*
+   properties that place its four photo lanes (registered, so they
+   interpolate); on phones it's the finished frame. */
+
+.sticky-grid-scroll .letter__word.vd-letter__word {
+  font-family: inherit;
+  font-size: clamp(64px, calc(var(--fluid) * 300), 300px);
+  font-weight: 900;
+  font-stretch: 125%;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  /* Signal blue shows through until the photos arrive */
+  background-color: #2340ff;
+}
+
+/* The service photos download only once the section nears the viewport
+   (MarkNear sets data-near) */
+.sticky-grid-scroll[data-near] .letter__word.vd-letter__word {
+  background-image: url("/img/services/social-media-marketing.jpg"),
+    url("/img/services/content-strategy.jpg"),
+    url("/img/services/email-marketing.jpg"),
+    url("/img/services/hosting-maintenance.jpg");
+}
+
+.sticky-grid-scroll .vd-letter .letter__description {
+  font-family: inherit;
+}
+
+/* The finished frame: the lanes at rest, the statement on the closing
+   charcoal. Phones and reduced motion see only this; it's not pinned. */
+.sticky-grid-scroll .vd-letter .letter__wrapper {
+  background-color: #232326;
+}
+
+.sticky-grid-scroll .letter__word.vd-letter__word {
+  --sgs-lane-a: 78%;
+  --sgs-lane-b: 18%;
+  --sgs-lane-c: 88%;
+  --sgs-lane-d: 30%;
+}
+
+@media (max-width: 767px), (prefers-reduced-motion: reduce) {
+  .sticky-grid-scroll .block--letter.vd-letter {
+    height: auto;
+  }
+
+  .sticky-grid-scroll .vd-letter .letter__wrapper {
+    position: relative;
+    height: auto;
+    padding-block: 96px;
+  }
+}
+
+@supports not (animation-timeline: view()) {
+  .sticky-grid-scroll .block--letter.vd-letter {
+    height: auto;
+  }
+
+  .sticky-grid-scroll .vd-letter .letter__wrapper {
+    position: relative;
+    height: auto;
+    padding-block: 120px;
+  }
+}
+
+/* ---------------- The scroll (wide screens) ---------------- */
+
+/* The section pins and its view timeline runs the story: the word rises
+   out of its line, the photo lanes drift through the letters while the
+   ground turns from white to charcoal, then the statement fades in */
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .sticky-grid-scroll .block--letter.vd-letter {
+      view-timeline-name: --vd-letter;
+    }
+
+    .sticky-grid-scroll .vd-letter .letter__wrapper {
+      animation: vd-letter-ground linear both;
+      animation-timeline: --vd-letter;
+      animation-range: contain 15% contain 80%;
+    }
+
+    .sticky-grid-scroll .letter__word.vd-letter__word {
+      animation:
+        vd-letter-rise cubic-bezier(0.2, 0.8, 0.2, 1) both,
+        vd-letter-drift linear both;
+      animation-timeline: --vd-letter, --vd-letter;
+      animation-range:
+        entry 60% contain 15%,
+        contain 15% contain 85%;
+    }
+
+    .sticky-grid-scroll .vd-letter .letter__content {
+      animation: vd-letter-fade linear both;
+      animation-timeline: --vd-letter;
+      animation-range: contain 70% contain 85%;
+    }
+  }
+}
+
+@keyframes vd-letter-ground {
+  from {
+    background-color: #fff;
+  }
+  to {
+    background-color: #232326;
+  }
+}
+
+@keyframes vd-letter-rise {
+  from {
+    translate: 0 100%;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/* From the lanes' registered starting points to their resting places */
+@keyframes vd-letter-drift {
+  from {
+    --sgs-lane-a: 12%;
+    --sgs-lane-b: 82%;
+    --sgs-lane-c: 20%;
+    --sgs-lane-d: 90%;
+  }
+  to {
+    --sgs-lane-a: 78%;
+    --sgs-lane-b: 18%;
+    --sgs-lane-c: 88%;
+    --sgs-lane-d: 30%;
+  }
+}
+
+@keyframes vd-letter-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
